@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animal Fusion - Hybrid Animal Creator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #FF6B6B;
+            --secondary-color: #4ECDC4;
+            --accent-color: #FFE66D;
+            --dark-text: #2c3e50;
+            --light-text: #ffffff;
+            --bg-light: #f8f9fa;
+            --shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--dark-text);
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            background: linear-gradient(135deg, var(--primary-color), #FF5252);
+            color: var(--light-text);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+            font-size: 14px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button.secondary {
+            background: linear-gradient(135deg, var(--secondary-color), #47B8AF);
+        }
+
+        button.accent {
+            background: linear-gradient(135deg, var(--accent-color), #FFD93D);
+            color: var(--dark-text);
+        }
+
+        button.danger {
+            background: linear-gradient(135deg, #FF6B6B, #FF5252);
+        }
+
+        button.small {
+            padding: 8px 16px;
+            font-size: 12px;
+        }
+
+        /* Screens */
+        .screen {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Animal Selection Screen */
+        .animal-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .search-box {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 12px 20px;
+            border: 2px solid #ddd;
+            border-radius: 25px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 3px rgba(78, 205, 196, 0.2);
+        }
+
+        .animal-card {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+            border: 3px solid transparent;
+        }
+
+        .animal-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .animal-card.selected {
+            border-color: var(--secondary-color);
+            background: linear-gradient(135deg, rgba(78, 205, 196, 0.1), rgba(78, 205, 196, 0.05));
+            transform: scale(1.05);
+        }
+
+        .animal-emoji {
+            font-size: 50px;
+            margin-bottom: 8px;
+            animation: bounce 0.5s ease;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .animal-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--dark-text);
+        }
+
+        /* Selection Status */
+        .selection-status {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .selected-animal {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--dark-text);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .selected-animal .emoji {
+            font-size: 40px;
+        }
+
+        /* Result Screen */
+        .result-screen {
+            text-align: center;
+        }
+
+        .result-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 30px;
+            animation: slideUp 0.6s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-header {
+            font-size: 18px;
+            color: var(--secondary-color);
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .hybrid-name {
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin: 20px 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .hybrid-visual {
+            font-size: 120px;
+            margin: 30px 0;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .parent-animals {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin: 20px 0;
+            font-size: 40px;
+        }
+
+        .plus {
+            font-size: 24px;
+            color: var(--secondary-color);
+            font-weight: 700;
+        }
+
+        .hybrid-description {
+            font-size: 16px;
+            color: #666;
+            line-height: 1.6;
+            max-width: 500px;
+            margin: 20px auto;
+            font-style: italic;
+        }
+
+        .name-options {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .name-options-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--dark-text);
+        }
+
+        .name-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .name-btn {
+            background: white;
+            color: var(--dark-text);
+            border: 2px solid var(--secondary-color);
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .name-btn:hover {
+            background: var(--secondary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .name-btn.selected {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .btn-large {
+            padding: 15px 40px;
+            font-size: 16px;
+            flex: 1;
+            min-width: 150px;
+            max-width: 300px;
+        }
+
+        /* Gallery Screen */
+        .gallery-screen {
+            padding: 20px 0;
+        }
+
+        .gallery-title {
+            color: white;
+            font-size: 32px;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .gallery-count {
+            display: inline-block;
+            background: var(--accent-color);
+            color: var(--dark-text);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .gallery-item {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .gallery-item-emoji {
+            font-size: 60px;
+            margin-bottom: 10px;
+        }
+
+        .gallery-item-name {
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+
+        .gallery-item-source {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 10px;
+        }
+
+        .gallery-item-date {
+            font-size: 11px;
+            color: #bbb;
+            margin-bottom: 10px;
+        }
+
+        .gallery-item-actions {
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+        }
+
+        .gallery-item-actions button {
+            padding: 6px 12px;
+            font-size: 12px;
+            flex: 1;
+        }
+
+        .empty-gallery {
+            background: white;
+            border-radius: 15px;
+            padding: 60px 20px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            color: #999;
+        }
+
+        .empty-gallery-emoji {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+
+        /* Settings Screen */
+        .settings-screen {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            margin: 0 auto;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .settings-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 30px;
+            color: var(--dark-text);
+        }
+
+        .setting-group {
+            margin-bottom: 25px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .setting-group:last-child {
+            border-bottom: none;
+        }
+
+        .setting-label {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--dark-text);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toggle {
+            width: 50px;
+            height: 28px;
+            background: #ccc;
+            border-radius: 14px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .toggle.active {
+            background: var(--secondary-color);
+        }
+
+        .toggle::after {
+            content: '';
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 12px;
+            top: 2px;
+            left: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .toggle.active::after {
+            left: 24px;
+        }
+
+        .danger-zone {
+            background: #fff3cd;
+            border-left: 4px solid var(--primary-color);
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .danger-zone-title {
+            color: var(--primary-color);
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            header {
+                padding: 15px;
+                margin-bottom: 20px;
+            }
+
+            .logo {
+                font-size: 22px;
+            }
+
+            .animal-grid {
+                grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+                gap: 10px;
+            }
+
+            .animal-emoji {
+                font-size: 40px;
+            }
+
+            .animal-name {
+                font-size: 12px;
+            }
+
+            .hybrid-visual {
+                font-size: 80px;
+            }
+
+            .hybrid-name {
+                font-size: 36px;
+            }
+
+            .result-container {
+                padding: 25px;
+            }
+
+            .gallery-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+                gap: 15px;
+            }
+
+            .settings-screen {
+                padding: 20px;
+            }
+
+            .selection-status {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .nav-buttons {
+                width: 100%;
+            }
+
+            button.btn-large {
+                min-width: 100px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .animal-grid {
+                grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+            }
+
+            .hybrid-visual {
+                font-size: 60px;
+            }
+
+            .hybrid-name {
+                font-size: 28px;
+            }
+
+            .parent-animals {
+                font-size: 30px;
+                gap: 10px;
+            }
+
+            .gallery-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .action-buttons button {
+                width: 100%;
+            }
+        }
+
+        /* Confetti */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: var(--accent-color);
+            pointer-events: none;
+            animation: confetti-fall 3s ease-out forwards;
+        }
+
+        @keyframes confetti-fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Utility */
+        .hidden {
+            display: none !important;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .mt-20 {
+            margin-top: 20px;
+        }
+
+        .mb-20 {
+            margin-bottom: 20px;
+        }
+
+        .info-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div class="logo">🎨 Animal Fusion</div>
+            <div class="nav-buttons">
+                <button onclick="showScreen('selection')" class="secondary small">✨ Create</button>
+                <button onclick="showScreen('gallery')" class="accent small">📸 My Creations</button>
+                <button onclick="showScreen('settings')" class="small">⚙️ Settings</button>
+            </div>
+        </header>
+
+        <!-- Selection Screen -->
+        <div id="selection" class="screen active">
+            <div class="info-text" style="font-size: 18px; padding: 20px; background: linear-gradient(135deg, rgba(255, 107, 107, 0.2), rgba(78, 205, 196, 0.2)); border: 2px solid rgba(78, 205, 196, 0.5);">
+                🎯 <strong>Let's Fuse!</strong> Pick ONE animal and ONE food to create an amazing hybrid creature!
+            </div>
+
+            <div class="selection-status hidden" id="selectionStatus">
+                <div class="selected-animal">
+                    <span id="selectedAnimalEmoji" class="emoji"></span>
+                    <span id="selectedAnimalName"></span>
+                </div>
+                <button onclick="clearSelection()" class="danger small">✕ Clear</button>
+            </div>
+
+            <!-- Animals Section -->
+            <div style="margin-top: 30px; margin-bottom: 40px;">
+                <h3 style="color: white; font-size: 24px; font-weight: 700; margin-bottom: 15px;">🦁 Animals</h3>
+                <div class="animal-grid" id="animalGridAnimals"></div>
+            </div>
+
+            <!-- Foods Section -->
+            <div style="margin-bottom: 30px;">
+                <h3 style="color: white; font-size: 24px; font-weight: 700; margin-bottom: 15px;">🍞 Foods</h3>
+                <div class="animal-grid" id="animalGridFoods"></div>
+            </div>
+
+            <div id="selectionPrompt" class="text-center mb-20">
+                <div style="color: white; font-size: 20px; font-weight: 700;">👇 Select ONE animal</div>
+            </div>
+        </div>
+
+        <!-- Result Screen -->
+        <div id="result" class="screen result-screen">
+            <div class="result-container">
+                <div class="result-header">✨ You Created! ✨</div>
+                <div class="hybrid-name" id="hybridNameDisplay"></div>
+                <div class="hybrid-visual" id="hybridVisual" style="min-height: 250px; display: flex; align-items: center; justify-content: center; flex-direction: column;"></div>
+                <div class="parent-animals">
+                    <span id="animalAEmoji" style="font-size: 50px;"></span>
+                    <span class="plus">+</span>
+                    <span id="animalBEmoji" style="font-size: 50px;"></span>
+                </div>
+                <div class="hybrid-description" id="hybridDescription"></div>
+
+                <div class="name-options">
+                    <div class="name-options-title">🎨 Alternative Names</div>
+                    <div class="name-buttons" id="nameButtons"></div>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn-large secondary" onclick="saveCreation()">❤️ Save Creation</button>
+                <button class="btn-large accent" onclick="shareCreation()">↗️ Share</button>
+                <button class="btn-large" onclick="showScreen('selection')">✨ Create New</button>
+            </div>
+        </div>
+
+        <!-- Gallery Screen -->
+        <div id="gallery" class="screen gallery-screen">
+            <h2 class="gallery-title">
+                📸 My Creations
+                <span class="gallery-count" id="creationCount">0</span>
+            </h2>
+            <div id="galleryGrid" class="gallery-grid"></div>
+        </div>
+
+        <!-- Settings Screen -->
+        <div id="settings" class="screen">
+            <div class="settings-screen">
+                <h2 class="settings-title">⚙️ Settings</h2>
+
+                <div class="setting-group">
+                    <label class="setting-label">
+                        🔊 Sound Effects
+                        <button class="toggle" id="soundToggle" onclick="toggleSound()"></button>
+                    </label>
+                </div>
+
+                <div class="setting-group">
+                    <label class="setting-label">
+                        ✨ Animations
+                        <button class="toggle active" id="animationToggle" onclick="toggleAnimation()"></button>
+                    </label>
+                </div>
+
+                <div class="setting-group">
+                    <label class="setting-label">
+                        🎉 Confetti on Create
+                        <button class="toggle active" id="confettiToggle" onclick="toggleConfetti()"></button>
+                    </label>
+                </div>
+
+                <div class="setting-group danger-zone">
+                    <div class="danger-zone-title">⚠️ Danger Zone</div>
+                    <p style="margin-bottom: 15px; font-size: 14px; color: #666;">This action cannot be undone.</p>
+                    <button class="danger" onclick="clearAllData()" style="width: 100%;">🗑️ Delete All Creations</button>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <button onclick="showScreen('selection')" class="secondary" style="width: 100%;">← Back</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============ DATA ============
+        const animals = [
+            { id: 1, name: 'Capybara', emoji: '🦫', category: 'mammal', traits: ['chill', 'friendly', 'aquatic'], type: 'animal' },
+            { id: 2, name: 'Bear', emoji: '🐻', category: 'mammal', traits: ['strong', 'protective', 'cuddly'], type: 'animal' },
+            { id: 3, name: 'Turtle', emoji: '🐢', category: 'reptile', traits: ['slow', 'protected', 'ancient'], type: 'animal' }
+        ];
+
+        const foods = [
+            { id: 101, name: 'Bread', emoji: '🍞', category: 'grains', traits: ['crusty', 'warm', 'carby'], type: 'food' },
+            { id: 102, name: 'Mango', emoji: '🥭', category: 'fruit', traits: ['tropical', 'sweet', 'juicy'], type: 'food' }
+        ];
+
+        const allItems = [...animals, ...foods];
+
+        // ============ STATE ============
+        let selectedAnimal = null;
+        let selectedAnimalB = null;
+        let currentHybrid = null;
+        let creations = [];
+        let settings = {
+            sound: false,
+            animations: true,
+            confetti: true
+        };
+
+        // ============ INITIALIZATION ============
+        function init() {
+            loadSettings();
+            renderAnimalGrid();
+            loadCreations();
+            updateGallery();
+        }
+
+        // ============ ANIMAL SELECTION ============
+        function renderAnimalGrid() {
+            const animalGridAnimals = document.getElementById('animalGridAnimals');
+            const animalGridFoods = document.getElementById('animalGridFoods');
+            
+            const animalItems = allItems.filter(item => item.type === 'animal');
+            const foodItems = allItems.filter(item => item.type === 'food');
+            
+            animalGridAnimals.innerHTML = animalItems.map(item => `
+                <div class="animal-card" onclick="selectItem(${item.id}, this)">
+                    <div class="animal-emoji">${item.emoji}</div>
+                    <div class="animal-name">${item.name}</div>
+                    <div style="font-size: 10px; color: #999;">🦁 Animal</div>
+                </div>
+            `).join('');
+            
+            animalGridFoods.innerHTML = foodItems.map(item => `
+                <div class="animal-card" onclick="selectItem(${item.id}, this)">
+                    <div class="animal-emoji">${item.emoji}</div>
+                    <div class="animal-name">${item.name}</div>
+                    <div style="font-size: 10px; color: #999;">🍞 Food</div>
+                </div>
+            `).join('');
+        }
+
+        function filterAnimals(searchTerm) {
+            const cards = document.querySelectorAll('.animal-card');
+            const term = searchTerm.toLowerCase();
+            
+            if (term === '') {
+                cards.forEach(card => card.style.display = 'block');
+                return;
+            }
+            
+            cards.forEach(card => {
+                const text = card.textContent.toLowerCase();
+                card.style.display = text.includes(term) ? 'block' : 'none';
+            });
+        }
+
+        function selectItem(itemId, element) {
+            const item = allItems.find(i => i.id === itemId);
+            
+            if (!selectedAnimal) {
+                selectedAnimal = item;
+                document.getElementById('selectedAnimalEmoji').textContent = item.emoji;
+                document.getElementById('selectedAnimalName').textContent = item.name;
+                document.getElementById('selectionStatus').classList.remove('hidden');
+                const promptText = item.type === 'animal' ? '👇 Now select ONE food' : '👇 Now select ONE animal';
+                document.getElementById('selectionPrompt').innerHTML = `<div style="color: white; font-size: 20px; font-weight: 700;">${promptText}</div>`;
+                
+                // Highlight selected
+                document.querySelectorAll('.animal-card').forEach(c => c.classList.remove('selected'));
+                element.classList.add('selected');
+                
+                playSound();
+            } else if (item.id !== selectedAnimal.id && item.type !== selectedAnimal.type) {
+                selectedAnimalB = item;
+                generateHybrid();
+                playSound();
+            } else if (item.id !== selectedAnimal.id && item.type === selectedAnimal.type) {
+                alert('⚠️ Please select one animal AND one food!');
+            }
+        }
+
+        function clearSelection() {
+            selectedAnimal = null;
+            document.getElementById('selectionStatus').classList.add('hidden');
+            document.getElementById('selectionPrompt').innerHTML = '<div style="color: white; font-size: 20px; font-weight: 700;">👇 Select ONE animal</div>';
+            document.querySelectorAll('.animal-card').forEach(c => c.classList.remove('selected'));
+        }
+
+        // ============ HYBRID GENERATION ============
+        function generateHybrid() {
+            const a = selectedAnimal.name;
+            const b = selectedAnimalB.name;
+            
+            // Generate name variations
+            const names = generateHybridNames(a, b);
+            const selectedName = names[0];
+            
+            currentHybrid = {
+                animalA: selectedAnimal,
+                animalB: selectedAnimalB,
+                hybridName: selectedName,
+                alternativeNames: names,
+                description: generateDescription(selectedAnimal, selectedAnimalB),
+                imageUrl: null
+            };
+            
+            displayResult();
+            
+            if (settings.confetti) createConfetti();
+        }
+
+        function generateHybridNames(animalA, animalB) {
+            const names = new Set();
+            
+            // Method 1: A_start + B_end
+            const a_half = Math.ceil(animalA.length / 2);
+            const b_start = Math.floor(animalB.length / 2);
+            names.add(animalA.substring(0, a_half) + animalB.substring(b_start).toLowerCase());
+            
+            // Method 2: B_start + A_end
+            names.add(animalB.substring(0, Math.ceil(animalB.length / 2)) + animalA.substring(Math.floor(animalA.length / 2)).toLowerCase());
+            
+            // Method 3: Reverse
+            names.add(animalB.substring(0, 3) + animalA.substring(animalA.length - 3).toLowerCase());
+            
+            return Array.from(names).slice(0, 3);
+        }
+
+        function generateDescription(animalA, animalB) {
+            const descriptions = [
+                `A mysterious blend of ${animalA.name}'s ${animalA.traits[0]} nature and ${animalB.name}'s ${animalB.traits[0]} spirit.`,
+                `Born from ${animalA.name}'s ${animalA.traits[1]} qualities and ${animalB.name}'s ${animalB.traits[1]} essence.`,
+                `Combines ${animalA.name}'s ${animalA.traits[0]} with ${animalB.name}'s ${animalB.traits[0]} abilities!`,
+                `An extraordinary creature merging ${animalA.name} and ${animalB.name} in perfect harmony.`
+            ];
+            return descriptions[Math.floor(Math.random() * descriptions.length)];
+        }
+
+        // ============ VISUAL GENERATION ============
+        function getHybridSVG() {
+            // Create hybrid visual: head of animal A + body of animal B
+            const headEmoji = selectedAnimal.emoji;
+            const bodyEmoji = selectedAnimalB.emoji;
+            
+            // Map special combinations to generated images
+            const combinations = {
+                'Bear-Bread': 'https://user-gen-media-assets.s3.amazonaws.com/gemini_images/b8e79e9f-743e-405e-938c-dea204de98c4.png',
+                'Bread-Bear': 'https://user-gen-media-assets.s3.amazonaws.com/gemini_images/b8e79e9f-743e-405e-938c-dea204de98c4.png',
+                'Capybara-Bread': 'https://user-gen-media-assets.s3.amazonaws.com/gemini_images/12a2d7fd-b7a5-4e69-9d78-ccfc84e99e1e.png',
+                'Bread-Capybara': 'https://user-gen-media-assets.s3.amazonaws.com/gemini_images/12a2d7fd-b7a5-4e69-9d78-ccfc84e99e1e.png',
+                'Capybara-Mango': 'https://user-gen-media-assets.s3.amazonaws.com/gemini_images/842073e1-ae26-4480-bfcc-cc3c12962c89.png',
+                'Mango-Capybara': 'https://user-gen-media-assets.s3.amazonaws.com/gemini_images/842073e1-ae26-4480-bfcc-cc3c12962c89.png',
+                'Turtle-Bread': 'https://user-gen-media-assets.s3.amazonaws.com/gemini_images/2cc04012-47be-4d76-b08e-40db15131c8c.png',
+                'Bread-Turtle': 'https://user-gen-media-assets.s3.amazonaws.com/gemini_images/2cc04012-47be-4d76-b08e-40db15131c8c.png',
+                'Bear-Mango': 'https://user-gen-media-assets.s3.amazonaws.com/gemini_images/8063d387-c8bf-4d5d-afa7-9313681bc692.png',
+                'Mango-Bear': 'https://user-gen-media-assets.s3.amazonaws.com/gemini_images/8063d387-c8bf-4d5d-afa7-9313681bc692.png',
+                'Turtle-Mango': 'https://user-gen-media-assets.s3.amazonaws.com/gemini_images/81c8ed81-57ff-487b-a872-f7e4a144263e.png',
+                'Mango-Turtle': 'https://user-gen-media-assets.s3.amazonaws.com/gemini_images/81c8ed81-57ff-487b-a872-f7e4a144263e.png'
+            };
+            
+            const key = selectedAnimal.name + '-' + selectedAnimalB.name;
+            const imageUrl = combinations[key];
+            
+            if (imageUrl) {
+                return `
+                    <div style="position: relative; width: 300px; height: 300px; margin: 0 auto;">
+                        <img src="${imageUrl}" style="width: 100%; height: 100%; object-fit: contain;" alt="Hybrid">
+                    </div>
+                `;
+            }
+            
+            // Default emoji visualization
+            return `
+                <div style="position: relative; width: 200px; height: 250px; margin: 0 auto;">
+                    <!-- Head (Animal A) -->
+                    <div style="font-size: 80px; text-align: center; position: relative; z-index: 2; margin-bottom: -20px;">
+                        ${headEmoji}
+                    </div>
+                    <!-- Body (Animal B) -->
+                    <div style="font-size: 100px; text-align: center; position: relative; z-index: 1; margin-top: -10px;">
+                        ${bodyEmoji}
+                    </div>
+                </div>
+            `;
+        }
+
+        function displayResult() {
+            showScreen('result');
+            document.getElementById('hybridNameDisplay').textContent = currentHybrid.hybridName;
+            document.getElementById('hybridVisual').innerHTML = getHybridSVG();
+            document.getElementById('animalAEmoji').textContent = selectedAnimal.emoji;
+            document.getElementById('animalBEmoji').textContent = selectedAnimalB.emoji;
+            document.getElementById('hybridDescription').textContent = currentHybrid.description;
+            
+            const nameButtonsContainer = document.getElementById('nameButtons');
+            nameButtonsContainer.innerHTML = currentHybrid.alternativeNames.map((name, idx) => `
+                <button class="name-btn ${idx === 0 ? 'selected' : ''}" onclick="selectName('${name}', this)">
+                    ${name}
+                </button>
+            `).join('');
+        }
+
+        function selectName(name, element) {
+            currentHybrid.hybridName = name;
+            document.getElementById('hybridNameDisplay').textContent = name;
+            document.querySelectorAll('.name-btn').forEach(btn => btn.classList.remove('selected'));
+            element.classList.add('selected');
+        }
+
+        // ============ SAVE & SHARE ============
+        function saveCreation() {
+            const creation = {
+                id: Date.now(),
+                animalA: selectedAnimal.name,
+                animalAEmoji: selectedAnimal.emoji,
+                animalB: selectedAnimalB.name,
+                animalBEmoji: selectedAnimalB.emoji,
+                hybridName: currentHybrid.hybridName,
+                description: currentHybrid.description,
+                timestamp: new Date().toLocaleString()
+            };
+            
+            creations.unshift(creation);
+            localStorage.setItem('animalFusionCreations', JSON.stringify(creations));
+            
+            playSound();
+            alert('✅ Creation saved! Check "My Creations" to see it.');
+            updateGallery();
+        }
+
+        function shareCreation() {
+            const text = `🎨 I created ${currentHybrid.hybridName} by fusing ${selectedAnimal.name} + ${selectedAnimalB.name}! Try Animal Fusion: Create your own hybrid animals!`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Animal Fusion',
+                    text: text,
+                });
+            } else {
+                // Fallback: Copy to clipboard
+                navigator.clipboard.writeText(text).then(() => {
+                    alert('📋 Copied to clipboard! Share with friends.');
+                    playSound();
+                });
+            }
+        }
+
+        // ============ GALLERY ============
+        function loadCreations() {
+            const saved = localStorage.getItem('animalFusionCreations');
+            creations = saved ? JSON.parse(saved) : [];
+        }
+
+        function updateGallery() {
+            const gallery = document.getElementById('galleryGrid');
+            document.getElementById('creationCount').textContent = creations.length;
+            
+            if (creations.length === 0) {
+                gallery.innerHTML = `
+                    <div style="grid-column: 1 / -1; padding: 40px;">
+                        <div class="empty-gallery">
+                            <div class="empty-gallery-emoji">📸</div>
+                            <h3>No creations yet!</h3>
+                            <p>Start by creating your first hybrid animal.</p>
+                            <button onclick="showScreen('selection')" class="mt-20">✨ Create Now</button>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            gallery.innerHTML = creations.map(creation => `
+                <div class="gallery-item">
+                    <div class="gallery-item-emoji">${creation.animalAEmoji}${creation.animalBEmoji}</div>
+                    <div class="gallery-item-name">${creation.hybridName}</div>
+                    <div class="gallery-item-source">${creation.animalA} + ${creation.animalB}</div>
+                    <div class="gallery-item-date">${creation.timestamp}</div>
+                    <div class="gallery-item-actions">
+                        <button onclick="deleteCreation(${creation.id})" class="danger small">🗑️</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function deleteCreation(id) {
+            if (confirm('Are you sure? This cannot be undone.')) {
+                creations = creations.filter(c => c.id !== id);
+                localStorage.setItem('animalFusionCreations', JSON.stringify(creations));
+                updateGallery();
+                playSound();
+            }
+        }
+
+        // ============ SETTINGS ============
+        function loadSettings() {
+            const saved = localStorage.getItem('animalFusionSettings');
+            if (saved) settings = JSON.parse(saved);
+            updateSettingsUI();
+        }
+
+        function saveSettings() {
+            localStorage.setItem('animalFusionSettings', JSON.stringify(settings));
+        }
+
+        function updateSettingsUI() {
+            document.getElementById('soundToggle').classList.toggle('active', settings.sound);
+            document.getElementById('animationToggle').classList.toggle('active', settings.animations);
+            document.getElementById('confettiToggle').classList.toggle('active', settings.confetti);
+        }
+
+        function toggleSound() {
+            settings.sound = !settings.sound;
+            saveSettings();
+            updateSettingsUI();
+        }
+
+        function toggleAnimation() {
+            settings.animations = !settings.animations;
+            saveSettings();
+            updateSettingsUI();
+            document.body.style.animationDuration = settings.animations ? '0.4s' : '0s';
+        }
+
+        function toggleConfetti() {
+            settings.confetti = !settings.confetti;
+            saveSettings();
+            updateSettingsUI();
+        }
+
+        function clearAllData() {
+            if (confirm('⚠️ This will delete ALL your creations. Are you absolutely sure?')) {
+                if (confirm('Last chance! This cannot be undone.')) {
+                    creations = [];
+                    localStorage.removeItem('animalFusionCreations');
+                    updateGallery();
+                    showScreen('gallery');
+                    alert('✅ All data cleared!');
+                }
+            }
+        }
+
+        // ============ UI NAVIGATION ============
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        // ============ EFFECTS ============
+        function playSound() {
+            if (settings.sound) {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                osc.connect(gain);
+                gain.connect(audioContext.destination);
+                osc.frequency.value = 800;
+                osc.type = 'sine';
+                gain.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+                osc.start(audioContext.currentTime);
+                osc.stop(audioContext.currentTime + 0.1);
+            }
+        }
+
+        function createConfetti() {
+            if (!settings.confetti) return;
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.top = '-10px';
+                confetti.style.background = ['#FF6B6B', '#4ECDC4', '#FFE66D', '#95E1D3'][Math.floor(Math.random() * 4)];
+                document.body.appendChild(confetti);
+                setTimeout(() => confetti.remove(), 3000);
+            }
+        }
+
+        // ============ STARTUP ============
+        init();
+    </script>
+</body>
+</html>
